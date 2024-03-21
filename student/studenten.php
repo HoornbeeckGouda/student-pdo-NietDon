@@ -32,10 +32,17 @@ $qry_student = "SELECT
                         FROM student
                         ORDER BY achternaam, voornaam;";
 // gegevens query ophalen uit db student
-$result = mysqli_query($dbconn, $qry_student);
-$count_records = mysqli_num_rows($result);
+$result = $dbconn->prepare($qry_student);
+try {
+    $result->execute();
+    $result->setFetchMode(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error:". $e->getMessage();
+    exit;
+}
+$count_records = $result->rowCount();
 if ($count_records>0) { // wel studenten ophalen
-    while ($row=mysqli_fetch_array($result)) {
+    foreach($result as $row) {
         $contentTable .= "<tr>
                             <td>" . $row['id'] . "</td>
                             <td>" . $row['voornaam'] . "</td>
